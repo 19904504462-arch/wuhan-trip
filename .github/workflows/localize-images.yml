@@ -1,0 +1,137 @@
+name: Localize website images
+
+on:
+  push:
+    paths:
+      - '.github/workflows/localize-images.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  localize:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Download remote images and build static page
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re, urllib.request, urllib.parse, ssl, mimetypes, time
+          from concurrent.futures import ThreadPoolExecutor, as_completed
+
+          root = Path('.')
+          parts = [root / 'site' / f's{i:02d}.txt' for i in range(1,7)]
+          missing = [str(p) for p in parts if not p.exists()]
+          if missing:
+              raise SystemExit('Missing source chunks: ' + ', '.join(missing))
+
+          html = ''.join(p.read_text('utf-8') for p in parts)
+          assets = root / 'assets'
+          assets.mkdir(exist_ok=True)
+          for old in assets.glob('siteimg_*'):
+              if old.is_file(): old.unlink()
+
+          img_re = re.compile(r'<img\b[^>]*>', re.I)
+          tags = list(img_re.finditer(html))
+          jobs = []
+          for idx, m in enumerate(tags, 1):
+              tag = m.group(0)
+              def attr(name):
+                  mm = re.search(r'\b' + re.escape(name) + r'="([^"]*)"', tag, re.I)
+                  return mm.group(1) if mm else None
+              url = attr('data-hires-origin') or attr('data-origin')
+              src = attr('src')
+              if not url and src and src.startswith('http'):
+                  url = src
+              if url and url.startswith('http'):
+                  jobs.append((idx, tag, url))
+
+          ctx = ssl.create_default_context()
+          ctx.check_hostname = False
+          ctx.verify_mode = ssl.CERT_NONE
+
+          def fetch_one(job):
+              idx, tag, url = job
+              candidates = [url]
+              proxy = 'https://images.weserv.nl/?url=' + urllib.parse.quote(url, safe='') + '&q=92&output=jpg'
+              candidates.append(proxy)
+              last = None
+              for u in candidates:
+                  try:
+                      req = urllib.request.Request(u, headers={
+                          'User-Agent':'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/136 Safari/537.36',
+                          'Accept':'image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8',
+                          'Referer': urllib.parse.urlsplit(url).scheme + '://' + urllib.parse.urlsplit(url).netloc + '/'
+                      })
+                      with urllib.request.urlopen(req, timeout=35, context=ctx) as r:
+                          data = r.read()
+                          ctype = (r.headers.get_content_type() or '').lower()
+                      if len(data) < 1500:
+                          raise ValueError('too small')
+                      if 'png' in ctype: ext = '.png'
+                      elif 'webp' in ctype: ext = '.webp'
+                      elif 'gif' in ctype: ext = '.gif'
+                      else: ext = '.jpg'
+                      path = assets / f'siteimg_{idx:03d}{ext}'
+                      path.write_bytes(data)
+                      return idx, tag, path.as_posix(), len(data), url, None
+                  except Exception as e:
+                      last = repr(e)
+              return idx, tag, None, 0, url, last
+
+          results = {}
+          with ThreadPoolExecutor(max_workers=8) as ex:
+              futs = [ex.submit(fetch_one, j) for j in jobs]
+              for f in as_completed(futs):
+                  r = f.result(); results[r[0]] = r
+                  status = 'OK' if r[2] else 'FAIL'
+                  print(status, r[0], r[3], r[4], r[5] or '')
+
+          # Replace from end to start so offsets stay valid.
+          replacements = []
+          for idx, m in enumerate(tags, 1):
+              if idx not in results or not results[idx][2]:
+                  continue
+              oldtag = m.group(0)
+              local = results[idx][2]
+              newtag = oldtag
+              if re.search(r'\bsrc="[^"]*"', newtag, re.I):
+                  newtag = re.sub(r'\bsrc="[^"]*"', 'src="' + local + '"', newtag, count=1, flags=re.I)
+              else:
+                  newtag = newtag[:-1] + ' src="' + local + '">'
+              # Stop the old JS from swapping the local image back to a blocked remote URL.
+              newtag = re.sub(r'\sdata-hires-origin="[^"]*"', '', newtag, flags=re.I)
+              newtag = re.sub(r'\sdata-hires-proxy="[^"]*"', '', newtag, flags=re.I)
+              newtag = re.sub(r'\sdata-origin="[^"]*"', '', newtag, flags=re.I)
+              replacements.append((m.start(), m.end(), newtag))
+
+          for a,b,t in reversed(replacements):
+              html = html[:a] + t + html[b:]
+
+          # Add a tiny cache-busting marker without changing visible content.
+          html = html.replace('</head>', '<meta name="localized-images" content="github-local-v1"/></head>', 1)
+          Path('index.html').write_text(html, 'utf-8')
+          Path('.nojekyll').touch()
+          ok = sum(1 for r in results.values() if r[2])
+          fail = len(results)-ok
+          print(f'Localized {ok} images; {fail} failed; total remote candidates {len(results)}')
+          PY
+
+      - name: Commit localized page
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html assets .nojekyll
+          if git diff --cached --quiet; then
+            echo "No changes"
+          else
+            git commit -m "Localize site images for reliable display"
+            git push
+          fi
