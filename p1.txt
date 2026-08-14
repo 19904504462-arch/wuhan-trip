@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width,initial-scale=1,viewport-fit=cover" name="viewport"/>
+<title>武汉两天一晚｜风景建筑高清替换版（在线高清优先）</title>
+<style>
+:root{--blue:#2075ea;--green:#169763;--ink:#172033;--muted:#667085;--bg:#f4f7fb;--line:#dce6f3}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;color:var(--ink)}
+header{background:linear-gradient(135deg,#1769dd,#55a7ff);color:white;padding:24px 18px}
+header h1{margin:4px 0 7px;font-size:24px}
+header p{margin:4px 0;font-size:13px;line-height:1.5}
+.badge{display:inline-block;background:rgba(255,255,255,.18);border-radius:999px;padding:5px 9px;font-size:12px;font-weight:800;margin-top:8px}
+.wrap{max-width:900px;margin:auto;padding:13px}
+.notice{background:#fff;border:1px solid #dbe6f3;border-radius:15px;padding:13px 14px;font-size:13px;line-height:1.7;margin-bottom:10px}
+.nav{display:flex;gap:8px;position:sticky;top:0;z-index:5;padding:9px 0;background:var(--bg)}
+.nav a{flex:1;text-align:center;text-decoration:none;color:white;background:var(--blue);font-weight:900;padding:11px;border-radius:11px}
+.day-title{margin:19px 2px 9px;font-size:21px}
+.event{background:white;border-radius:17px;padding:13px;margin-bottom:11px;box-shadow:0 3px 16px rgba(30,65,110,.06)}
+.event-top{display:grid;grid-template-columns:92px 1fr;gap:11px;align-items:start}
+.time{color:#1769d2;font-size:14px;font-weight:900;padding-top:3px}
+h3{font-size:17px;margin:0 0 5px}
+.desc{font-size:13px;color:var(--muted);margin:0;line-height:1.55}
+details{margin-top:10px;border-radius:13px;overflow:hidden} details summary::after{content:"＋";float:right;font-size:16px;line-height:1} details[open] summary::after{content:"－"}
+summary{cursor:pointer;list-style:none;padding:10px 12px;font-size:13px;font-weight:900}
+summary::-webkit-details-marker{display:none}
+.route-card{border:1px solid #d7e7fb;background:#f6faff}
+.route-card summary{color:#1769d2;background:#eaf3ff}
+.route-body{padding:10px 12px 13px}
+.mode{font-weight:900;color:#1769d2;margin-bottom:6px}
+.route-body p,.route-body li{font-size:12.5px;color:#4f5f74;line-height:1.7}
+.route-body ol{padding-left:20px;margin-bottom:2px}
+.station-line{display:flex;align-items:center;overflow-x:auto;padding:8px 1px 10px;white-space:nowrap}
+.station{background:white;border:1px solid #d4e5fa;color:#155fad;padding:6px 8px;border-radius:9px;font-size:11.5px;font-weight:800}
+.arrow{padding:0 5px;color:#8da0b8;font-weight:900}
+.photo-card{border:1px solid #d7efe4;background:#f8fffb}
+.photo-card summary{color:#137c50;background:#e9f9f1}
+.heat{margin:10px 11px 5px;background:#fff3f4;color:#943642;border-radius:10px;padding:9px 10px;font-size:12px;line-height:1.55}
+.spot-desc{margin:8px 11px;font-size:12.5px;color:#526174;line-height:1.65}
+.tips{margin:8px 11px;padding-left:20px;font-size:12px;color:#526174;line-height:1.7}
+.gallery{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;padding:9px}
+.photo{margin:0;background:white;border:1px solid #e2e8ef;border-radius:12px;overflow:hidden}
+.photo img{display:block;width:100%;height:230px;object-fit:cover;background:#e9eef4}
+.photo figcaption{padding:8px}
+.photo b{display:block;font-size:12px;margin-bottom:3px}
+.photo small{display:block;font-size:10px;color:#7b8798;line-height:1.4}
+.source-box{background:#172033;color:#e8eef7;border-radius:15px;padding:13px 14px;margin:15px 0;font-size:12px;line-height:1.7}
+.source-box b{color:white}
+footer{text-align:center;color:#8b96a8;font-size:11px;padding:20px 0 30px}
+@media(max-width:580px){
+ .event-top{grid-template-columns:80px 1fr}
+ .time{font-size:12.5px}
+ .gallery{grid-template-columns:1fr}
+ .photo img{height:250px}
+}
+
+.food-overview{background:#fff;border:1px solid #f0dfc8;border-radius:16px;padding:13px 14px;margin:11px 0 14px;box-shadow:0 3px 16px rgba(70,55,30,.05)}
+.food-overview h2{font-size:19px;margin:0 0 9px}
+.food-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.food-card{background:#fffaf2;border:1px solid #f2dfbf;border-radius:13px;padding:11px}
+.food-card .meal{font-size:11px;color:#b36a16;font-weight:900}
+.food-card h3{font-size:16px;margin:4px 0 6px}
+.food-card p{font-size:12.5px;color:#5e6674;line-height:1.6;margin:5px 0}
+.food-card .order{background:#fff;border-radius:9px;padding:8px 9px;margin-top:7px;font-size:12px;line-height:1.6}
+.food-card .heatline{margin-top:7px;color:#a83e46;font-size:11px;line-height:1.5}
+.food-card .loc{color:#1769d2;font-weight:800}
+.food-tip{margin-top:8px;font-size:11px;color:#7d8797;line-height:1.55}
+@media(max-width:580px){.food-grid{grid-template-columns:1fr}.photo-card .gallery,.food-toggle .gallery{grid-template-columns:1fr}.photo img{height:auto;max-height:72vh}}
+
+
+.inline-food{
+  margin-top:10px;padding:11px 12px;border-radius:13px;
+  background:#fff9ef;border:1px solid #f2d8ac
+}
+.inline-food .meal-title{font-size:14px;font-weight:950;color:#ad6212;margin-bottom:7px}
+.inline-food .meal-meta{font-size:11.5px;color:#7b654d;line-height:1.55;margin-bottom:7px}
+.inline-food .order-box{background:#fff;border-radius:10px;padding:9px 10px;font-size:12.5px;line-height:1.68;color:#39485d}
+.inline-food .order-box b{color:#172033}
+.inline-food .douyin-ref{margin-top:8px;font-size:11px;line-height:1.55;color:#a34449}
+.inline-food .budget{display:inline-block;margin-top:7px;padding:4px 7px;background:#fff0d7;border-radius:999px;font-size:11px;font-weight:850;color:#9b5a10}
+.inline-food .why{margin-top:7px;font-size:11.5px;color:#667085;line-height:1.55}
+
+
+.photo-card .gallery,.food-toggle .gallery{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;padding:10px}.social-shot{object-fit:contain!important;background:#eef2f6!important}.photo img{cursor:zoom-in}.source-line{margin-top:3px;color:#697386}.zoom-layer{position:fixed;inset:0;z-index:99;background:rgba(11,18,30,.94);display:none;align-items:center;justify-content:center;padding:20px}.zoom-layer.show{display:flex}.zoom-layer img{max-width:96vw;max-height:90vh;object-fit:contain;border-radius:14px}.zoom-close{position:absolute;right:18px;top:14px;border:0;border-radius:999px;background:#fff;color:#172033;width:42px;height:42px;font-size:24px;cursor:pointer}@media(max-width:850px){.photo-card .gallery,.food-toggle .gallery{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.photo-card .photo img{display:block;width:100%;height:260px;object-fit:cover;background:#e8eef5}
+.photo-card .photo figcaption{padding:8px}
+.photo-card .photo b{display:block;font-size:12px;margin-bottom:3px}
+.photo-card .photo small{display:block;font-size:10px;color:#7b8798;line-height:1.4}
+.photo-card .heat{margin:10px 11px 5px;background:#fff3f4;color:#943642;border-radius:10px;padding:9px 10px;font-size:12px;line-height:1.55}
+.photo-card .spot-desc{margin:8px 11px;font-size:12.5px;color:#526174;line-height:1.68}
+.photo-card .tips{margin:8px 11px;padding-left:20px;font-size:12px;color:#526174;line-height:1.72}
+.photo-card summary{cursor:pointer}
+
+.food-toggle{margin-top:10px;border:1px solid #f2d8ac;background:#fffaf2;border-radius:13px;overflow:hidden}
+.food-toggle summary{background:#fff1dc;color:#a25a0a;padding:10px 12px;font-size:13px;font-weight:950;cursor:pointer}
+.food-toggle .food-body{padding:10px 12px 12px}
+.food-toggle .meal-meta{font-size:11.5px;color:#7b654d;line-height:1.58;margin-bottom:8px}
+.food-toggle .order-box{background:#fff;border-radius:10px;padding:9px 10px;font-size:12.5px;line-height:1.68;color:#39485d}
+.food-toggle .order-box b{color:#172033}
+.food-toggle .budget{display:inline-block;margin-top:8px;padding:4px 7px;background:#fff0d7;border-radius:999px;font-size:11px;font-weight:850;color:#9b5a10}
+.food-toggle .douyin-ref{margin-top:8px;font-size:11px;line-height:1.55;color:#a34449}
+.food-toggle .why{margin-top:7px;font-size:11.5px;color:#667085;line-height:1.55}
+.food-toggle .gallery{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin-top:10px}
+.food-toggle .photo{margin:0;background:#fff;border:1px solid #eadfc8;border-radius:12px;overflow:hidden}
+.food-toggle .photo img{display:block;width:100%;height:210px;object-fit:cover;background:#f0efe8}
+.food-toggle .photo figcaption{padding:8px}
+.food-toggle .photo b{display:block;font-size:12px;margin-bottom:2px}
+.food-toggle .photo small{display:block;font-size:10px;color:#8b8376}
+.slim-note{margin-top:9px;font-size:11px;color:#8a95a7;line-height:1.55}
+@media(max-width:580px){
+  .photo-card .gallery,.food-toggle .gallery{grid-template-columns:1fr}
+  .photo-card .photo img{height:230px}
+}
+</style>
+<style id="mobile-recrop-style">
+.gallery.mobile-gallery{grid-template-columns:repeat(2,minmax(0,1fr))!important;align-items:start}
+.mobile-social{background:#fff;border:1px solid #e2e8f0;border-radius:16px;overflow:hidden;box-shadow:0 7px 20px rgba(15,23,42,.08)}
+.photo img.mobile-shot{width:100%;height:auto!important;aspect-ratio:617/840;object-fit:contain!important;object-position:center;background:#f6f7f9!important;border-radius:0}
+.mobile-social figcaption{min-height:76px;padding:10px 11px 12px;line-height:1.45}
+.mobile-social figcaption b{display:block;font-size:14px;margin-bottom:4px;color:#152238}
+.mobile-social figcaption small{display:block;font-size:11px;color:#667085}
+@media(max-width:580px){.gallery.mobile-gallery{grid-template-columns:1fr!important}.mobile-social figcaption{min-height:0}}
+</style>
+<style id="material-crop-style">
+/* 13版：只展示素材主体，不展示整页App截图 */
+.photo img.material-shot{display:block;width:100%;height:auto!important;aspect-ratio:auto!important;object-fit:contain!important;object-position:center;background:#101318!important;cursor:zoom-in}
+.photo.material-photo,.mobile-social{background:#fff;border:1px solid #e2e8ef;border-radius:14px;overflow:hidden;box-shadow:0 5px 18px rgba(20,40,70,.07)}
+.gallery.mobile-gallery{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:10px!important;align-items:start}
+.video-route{margin:10px 11px;padding:11px 12px;border-radius:13px;border:1px solid #d8e6f7;background:#f8fbff}
+.video-route.orange{background:#fff9ef;border-color:#f2d8ac}.video-route.red{background:#fff6f6;border-color:#f2cccc}.video-route.green{background:#f4fcf8;border-color:#cfe9db}.video-route.purple{background:#faf7ff;border-color:#ded3f4}.video-route.gold{background:#fffaf0;border-color:#ead9ae}
+.video-route-title{font-size:13.5px;font-weight:950;color:#1b365d;margin-bottom:6px}.video-route.orange .video-route-title{color:#a25a0a}.video-route.red .video-route-title{color:#a43b3b}.video-route.green .video-route-title{color:#137c50}.video-route.purple .video-route-title{color:#6941a5}.video-route.gold .video-route-title{color:#8a6415}
+.video-route-main{margin:0 0 7px;font-size:12.5px;line-height:1.7;color:#39485d;font-weight:700}
+.video-route ul{margin:4px 0 6px;padding-left:20px}.video-route li{font-size:11.5px;line-height:1.65;color:#667085;margin:2px 0}
+.video-links{display:flex;gap:7px;flex-wrap:wrap;margin-top:8px}.video-links a{display:inline-block;text-decoration:none;background:#172033;color:#fff;padding:7px 9px;border-radius:9px;font-size:10.5px;font-weight:800}.video-links a:hover{opacity:.9}
+.video-online-note{margin-top:6px;color:#8a95a7;font-size:10px;line-height:1.45}
+@media(max-width:580px){.gallery.mobile-gallery{grid-template-columns:1fr!important}.video-route{margin-left:8px;margin-right:8px}.photo img.material-shot{max-height:72vh;object-fit:contain!important}}
+</style><style id="hd-gallery-style">
+.hd-source-note{margin:9px 11px 3px;padding:9px 10px;border-radius:10px;background:#eef7ff;color:#3d5b78;font-size:11.5px;line-height:1.6}
+.hd-source-note a{color:#1769d2;font-weight:850;text-decoration:none}
+.gallery.hd-gallery{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:10px!important;padding:10px!important;align-items:start}
+.hd-photo{height:100%;display:flex;flex-direction:column;background:#fff;border:1px solid #e0e7ef;border-radius:13px;overflow:hidden;box-shadow:0 2px 10px rgba(30,65,110,.05)}
+.photo img.hd-img{display:block;width:100%;height:230px!important;object-fit:cover!important;object-position:center!important;background:#eef2f6!important;image-rendering:auto;cursor:zoom-in}
+.hd-photo figcaption{flex:1;padding:8px 9px 9px!important}
+.hd-photo figcaption b{font-size:12px!important;line-height:1.35}
+.hd-photo figcaption small{font-size:9.8px!important;color:#7b8798!important;line-height:1.45!important}
+@media(max-width:850px){.gallery.hd-gallery{grid-template-columns:repeat(2,minmax(0,1fr))!important}.photo img.hd-img{height:240px!important}}
+@media(max-width:580px){.gallery.hd-gallery{grid-template-columns:1fr!important}.photo img.hd-img{height:auto!important;max-height:68vh!important;object-fit:contain!important;background:#f3f6f9!important}}
+</style><style id="fresh-2026-style">
+.fresh-source-note{margin:10px 11px 2px;padding:9px 11px;border-radius:10px;background:#eef8ff;color:#3f5875;font-size:11.5px;line-height:1.6;border:1px solid #dbeaf7}
+.fresh-gallery{grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:12px!important;padding:11px!important;align-items:start}
+.fresh-2026-photo{box-shadow:0 4px 14px rgba(15,35,60,.07);border-color:#dce5ef!important}
+.fresh-2026-photo .hd-img{display:block;width:100%;height:245px!important;object-fit:cover!important;object-position:center;background:#eef2f6!important}
+.fresh-2026-photo figcaption{min-height:73px}
+.fresh-2026-photo figcaption b{font-size:12.5px!important}
+.fresh-2026-photo figcaption small{font-size:10.5px!important;line-height:1.5!important}
+@media(max-width:850px){.fresh-gallery{grid-template-columns:repeat(2,minmax(0,1fr))!important}.fresh-2026-photo .hd-img{height:235px!important}}
+@media(max-width:580px){.fresh-gallery{grid-template-columns:1fr!important}.fresh-2026-photo .hd-img{height:auto!important;max-height:70vh;object-fit:contain!important;background:#f3f5f8!important}.fresh-2026-photo figcaption{min-height:0}}
+</style><style id="scenery-first-v16">
+.scenery-first-gallery{grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:12px!important}
+.scenery-first-gallery .photo{background:#fff;border-radius:14px;overflow:hidden}
+.scenery-first-gallery .hd-img{width:100%!important;height:250px!important;object-fit:cover!important;object-position:center!important;background:#eef2f6!important}
+.scenery-first-gallery figcaption{min-height:66px;padding:9px 10px 11px}
+.scenery-first-gallery figcaption b{font-size:12.5px;line-height:1.35}
+.scenery-first-gallery figcaption small{font-size:10.5px;line-height:1.45;color:#667085}
+@media(max-width:850px){.scenery-first-gallery{grid-template-columns:repeat(2,minmax(0,1fr))!important}}
+@media(max-width:580px){.scenery-first-gallery{grid-template-columns:1fr!important}.scenery-first-gallery .hd-img{height:auto!important;aspect-ratio:4/3;object-fit:cover!important}}
+</style><link crossorigin="anonymous" href="https://www.wuhan.gov.cn" rel="preconnect"/><link crossorigin="anonymous" href="https://sw.wuhan.gov.cn" rel="preconnect"/><link crossorigin="anonymous" href="https://hbrbapp.hubeidaily.net" rel="preconnect"/><link crossorigin="anonymous" href="https://3g.wuhan.gov.cn" rel="preconnect"/><link crossorigin="anonymous" href="https://img.cjyun.org" rel="preconnect"/><link crossorigin="anonymous" href="https://ak-d.tripcdn.com" rel="preconnect"/><style>
+/* v17: instant embedded previews; hi-res network image upgrades in-place */
+img.hd-img{background:#eef3f8;transition:filter .25s ease,opacity .25s ease;opacity:1!important}
+img.hd-img[data-hd-ready="0"]{filter:none}
+img.hd-img[data-hd-ready="1"]{filter:none}
+.photo{min-height:120px}
+</style></head>
+<body>
+<header>
+<div style="font-size:12px;font-weight:800;opacity:.9">WUHAN WEEKEND · STATIC OFFLINE</div>
+<h1>武汉两天一晚｜图片即时显示版</h1>
+<p>住宿：枫栖半山酒店（黄鹤楼武昌火车站店）</p>
+<p>周六8月15日 + 周日8月16日｜周日约18:00武汉站返程</p>
+<span class="badge">高清原图优先｜每景点5–8图｜抖音路线提炼｜离线回退</span>
+</header>
+<main class="wrap">
+<div class="notice"><b>这版图片调整重点：</b><br/>1）万象城重新换成真实餐厅 + 中庭/建筑/临江视野；2）江汉路删除大面积人群图，改成江汉关、历史建筑和夜景；3）图片统一横向高清卡片，不再把低清小图强行放大。<div style="margin-top:8px;padding:8px 10px;border-radius:10px;background:#eef7ff;color:#275d8c;font-size:12px;line-height:1.55">图片显示策略：先即时显示已内嵌的离线预览图；联网后在后台加载对应高清原图并自动无感替换，不再出现打开页面后整块空白。</div></div><nav class="nav">
+<a href="#sat">周六行程</a>
+<a href="#sun">周日行程</a>
+</nav><div class="source-box" style="margin-top:8px"><b>关于抖音视频截图：</b>真正从1080P原视频抽帧可以明显比“页面截图后再放大”更清楚。本版没有把其他图片伪装成抖音截帧：由于当前环境无法直接导出你给的 v.douyin.com 视频文件，现阶段先用2026年武汉官方/湖北日报等高清实拍替掉旧图；你给的抖音视频仍作为游玩顺序、机位和素材筛选依据。</div>
+<section id="sat">
+<h2 class="day-title">周六｜老武昌 + 万象城避暑 + 长江夜景</h2>
+<article class="event">
+<div class="event-top">
+<div class="time">07:15</div>
+<div>
+<h3>起床 / 洗漱</h3>
+<p class="desc">轻装出发，早餐留到粮道街。</p>
+</div>
+</div>
+</article>
+<article class="event">
+<div class="event-top">
+<div class="time">07:40</div>
+<div>
+<h3>酒店 → 粮道街</h3>
+<p class="desc">直接打车，减少早晨折腾。</p>
+</div>
+</div>
+<details class="route-card" id="route-hotel_liangdao" open="">
+<summary>🧭 路线已经提前查好：酒店 → 粮道街</summary>
+<div class="route-body">
+<div class="mode">🚕 打车｜约10–15分钟</div>
+<p>这段不绕地铁，早上两个人直接打车最省体力。</p>
+<div class="station-line"><span class="station">酒店</span><span class="arrow">→</span><span class="station">中山路</span><span class="arrow">→</span><span class="station">粮道街·胭脂路口</span></div>
+<ol><li>上车点：枫栖半山酒店（黄鹤楼武昌火车站店），中山路360号。</li><li>下车点建议直接说：粮道街·胭脂路口。</li><li>到达后沿粮道街主街边走边吃；早餐结束从胭脂路一侧向黄鹤楼方向衔接。</li><li>如果司机问具体目的地，可报“粮道街胭脂路公交站/粮道街胭脂路口”。</li></ol>
+</div>
+</details>
+</article>
+<article class="event">
+<div class="event-top">
+<div class="time">07:50–08:50</div>
+<div>
+<h3>粮道街</h3>
+<p class="desc">边走边吃，别一开始就吃撑。</p>
+</div>
+</div>
+<details class="photo-card" id="spot-liangdao"><summary>📸 粮道街｜2026现场过早与街景｜高清 6 图</summary><div class="heat">近期抖音/小红书交叉验证：粮道街仍是武汉过早高频推荐；热门单店排队波动大，现场超过30分钟就换同品类。</div><p class="spot-desc">不只看食物近景：先看街道和人流，再两个人分食几样代表早餐。</p><div class="video-route orange"><d
