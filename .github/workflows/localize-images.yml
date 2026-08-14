@@ -22,7 +22,7 @@ jobs:
         run: |
           python - <<'PY'
           from pathlib import Path
-          import re, urllib.request, urllib.parse, ssl, mimetypes, time
+          import re, urllib.request, urllib.parse, ssl
           from concurrent.futures import ThreadPoolExecutor, as_completed
 
           root = Path('.')
@@ -58,18 +58,17 @@ jobs:
 
           def fetch_one(job):
               idx, tag, url = job
-              candidates = [url]
-              proxy = 'https://images.weserv.nl/?url=' + urllib.parse.quote(url, safe='') + '&q=92&output=jpg'
-              candidates.append(proxy)
+              proxy = 'https://images.weserv.nl/?url=' + urllib.parse.quote(url, safe='') + '&q=90&output=jpg'
               last = None
-              for u in candidates:
+              for u in (url, proxy):
                   try:
+                      base = urllib.parse.urlsplit(url)
                       req = urllib.request.Request(u, headers={
                           'User-Agent':'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/136 Safari/537.36',
                           'Accept':'image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8',
-                          'Referer': urllib.parse.urlsplit(url).scheme + '://' + urllib.parse.urlsplit(url).netloc + '/'
+                          'Referer': base.scheme + '://' + base.netloc + '/'
                       })
-                      with urllib.request.urlopen(req, timeout=35, context=ctx) as r:
+                      with urllib.request.urlopen(req, timeout=6, context=ctx) as r:
                           data = r.read()
                           ctype = (r.headers.get_content_type() or '').lower()
                       if len(data) < 1500:
@@ -80,32 +79,29 @@ jobs:
                       else: ext = '.jpg'
                       path = assets / f'siteimg_{idx:03d}{ext}'
                       path.write_bytes(data)
-                      return idx, tag, path.as_posix(), len(data), url, None
+                      return idx, path.as_posix(), len(data), url, None
                   except Exception as e:
                       last = repr(e)
-              return idx, tag, None, 0, url, last
+              return idx, None, 0, url, last
 
           results = {}
-          with ThreadPoolExecutor(max_workers=8) as ex:
+          with ThreadPoolExecutor(max_workers=16) as ex:
               futs = [ex.submit(fetch_one, j) for j in jobs]
               for f in as_completed(futs):
                   r = f.result(); results[r[0]] = r
-                  status = 'OK' if r[2] else 'FAIL'
-                  print(status, r[0], r[3], r[4], r[5] or '')
+                  print('OK' if r[1] else 'FAIL', r[0], r[2], r[3], r[4] or '')
 
-          # Replace from end to start so offsets stay valid.
           replacements = []
           for idx, m in enumerate(tags, 1):
-              if idx not in results or not results[idx][2]:
+              if idx not in results or not results[idx][1]:
                   continue
               oldtag = m.group(0)
-              local = results[idx][2]
+              local = results[idx][1]
               newtag = oldtag
               if re.search(r'\bsrc="[^"]*"', newtag, re.I):
                   newtag = re.sub(r'\bsrc="[^"]*"', 'src="' + local + '"', newtag, count=1, flags=re.I)
               else:
                   newtag = newtag[:-1] + ' src="' + local + '">'
-              # Stop the old JS from swapping the local image back to a blocked remote URL.
               newtag = re.sub(r'\sdata-hires-origin="[^"]*"', '', newtag, flags=re.I)
               newtag = re.sub(r'\sdata-hires-proxy="[^"]*"', '', newtag, flags=re.I)
               newtag = re.sub(r'\sdata-origin="[^"]*"', '', newtag, flags=re.I)
@@ -114,13 +110,11 @@ jobs:
           for a,b,t in reversed(replacements):
               html = html[:a] + t + html[b:]
 
-          # Add a tiny cache-busting marker without changing visible content.
-          html = html.replace('</head>', '<meta name="localized-images" content="github-local-v1"/></head>', 1)
+          html = html.replace('</head>', '<meta name="localized-images" content="github-local-v2"/></head>', 1)
           Path('index.html').write_text(html, 'utf-8')
           Path('.nojekyll').touch()
-          ok = sum(1 for r in results.values() if r[2])
-          fail = len(results)-ok
-          print(f'Localized {ok} images; {fail} failed; total remote candidates {len(results)}')
+          ok = sum(1 for r in results.values() if r[1])
+          print(f'Localized {ok}/{len(results)} remote images')
           PY
 
       - name: Commit localized page
