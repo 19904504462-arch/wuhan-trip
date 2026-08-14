@@ -32,6 +32,11 @@ jobs:
               raise SystemExit('Missing source chunks: ' + ', '.join(missing))
 
           html = ''.join(p.read_text('utf-8') for p in parts)
+
+          # Repair the stylesheet typo introduced by the earlier compact publishing pass.
+          html = html.replace('"PingFang SC,"Microsoft YaHei"', '"PingFang SC","Microsoft YaHei"')
+          html = html.replace('<!DOCTYPE html><!DOCTYPE html>', '<!DOCTYPE html>')
+
           assets = root / 'assets'
           assets.mkdir(exist_ok=True)
           for old in assets.glob('siteimg_*'):
@@ -58,17 +63,17 @@ jobs:
 
           def fetch_one(job):
               idx, tag, url = job
-              proxy = 'https://images.weserv.nl/?url=' + urllib.parse.quote(url, safe='') + '&q=90&output=jpg'
+              candidates = [url, 'https://images.weserv.nl/?url=' + urllib.parse.quote(url, safe='') + '&q=92&output=jpg']
               last = None
-              for u in (url, proxy):
+              for u in candidates:
                   try:
-                      base = urllib.parse.urlsplit(url)
+                      p = urllib.parse.urlsplit(url)
                       req = urllib.request.Request(u, headers={
                           'User-Agent':'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/136 Safari/537.36',
                           'Accept':'image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8',
-                          'Referer': base.scheme + '://' + base.netloc + '/'
+                          'Referer': p.scheme + '://' + p.netloc + '/'
                       })
-                      with urllib.request.urlopen(req, timeout=6, context=ctx) as r:
+                      with urllib.request.urlopen(req, timeout=12, context=ctx) as r:
                           data = r.read()
                           ctype = (r.headers.get_content_type() or '').lower()
                       if len(data) < 1500:
@@ -79,29 +84,31 @@ jobs:
                       else: ext = '.jpg'
                       path = assets / f'siteimg_{idx:03d}{ext}'
                       path.write_bytes(data)
-                      return idx, path.as_posix(), len(data), url, None
+                      return idx, path.as_posix(), len(data)
                   except Exception as e:
                       last = repr(e)
-              return idx, None, 0, url, last
+              return idx, None, 0
 
           results = {}
           with ThreadPoolExecutor(max_workers=16) as ex:
               futs = [ex.submit(fetch_one, j) for j in jobs]
               for f in as_completed(futs):
-                  r = f.result(); results[r[0]] = r
-                  print('OK' if r[1] else 'FAIL', r[0], r[2], r[3], r[4] or '')
+                  idx, path, size = f.result()
+                  results[idx] = (path, size)
+                  print(('OK' if path else 'FAIL'), idx, size)
 
           replacements = []
           for idx, m in enumerate(tags, 1):
-              if idx not in results or not results[idx][1]:
+              r = results.get(idx)
+              if not r or not r[0]:
                   continue
               oldtag = m.group(0)
-              local = results[idx][1]
+              local = r[0]
               newtag = oldtag
               if re.search(r'\bsrc="[^"]*"', newtag, re.I):
                   newtag = re.sub(r'\bsrc="[^"]*"', 'src="' + local + '"', newtag, count=1, flags=re.I)
               else:
-                  newtag = newtag[:-1] + ' src="' + local + '">'
+                  newtag = newtag[:-1] + ' src="' + local + '">' 
               newtag = re.sub(r'\sdata-hires-origin="[^"]*"', '', newtag, flags=re.I)
               newtag = re.sub(r'\sdata-hires-proxy="[^"]*"', '', newtag, flags=re.I)
               newtag = re.sub(r'\sdata-origin="[^"]*"', '', newtag, flags=re.I)
@@ -110,11 +117,23 @@ jobs:
           for a,b,t in reversed(replacements):
               html = html[:a] + t + html[b:]
 
-          html = html.replace('</head>', '<meta name="localized-images" content="github-local-v2"/></head>', 1)
+          html = html.replace('</head>', '<meta name="localized-images" content="github-local-v3"/></head>', 1)
+
+          # Build-time safety checks. These catch the exact failure shown in the user's screenshot.
+          checks = {
+              'blue_header': 'linear-gradient(135deg,#1769dd,#55a7ff)' in html,
+              'rounded_cards': 'border-radius:16px' in html or 'border-radius:17px' in html,
+              'grid_gallery': 'grid-template-columns:repeat(3,minmax(0,1fr))' in html,
+              'font_css_fixed': '"PingFang SC","Microsoft YaHei"' in html,
+              'has_local_images': 'src="assets/siteimg_' in html,
+          }
+          print('VALIDATION', checks)
+          if not all(checks.values()):
+              raise SystemExit('Page validation failed: ' + repr(checks))
+
           Path('index.html').write_text(html, 'utf-8')
           Path('.nojekyll').touch()
-          ok = sum(1 for r in results.values() if r[1])
-          print(f'Localized {ok}/{len(results)} remote images')
+          print('Localized image count:', sum(1 for p in assets.glob('siteimg_*') if p.is_file()))
           PY
 
       - name: Commit localized page
@@ -126,6 +145,6 @@ jobs:
           if git diff --cached --quiet; then
             echo "No changes"
           else
-            git commit -m "Localize site images for reliable display"
+            git commit -m "Fix page styling and keep images local"
             git push
           fi
